@@ -1,41 +1,75 @@
+/////////////////////////////////////////////////////////////////////////////////////////
+
 import "./App.css";
 import React, { useState, useEffect } from "react";
 import Header from "./components/header";
 import CharacterContainer from "./components/character_container";
 import Navigation from "./components/navigation";
 import { DisneyCharacter } from "./disney_character";
+import { FavCharacterContext } from "./components/favCharacterContext";
+
+/////////////////////////////////////////////////////////////////////////////////////////
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [characters, setCharacters] = useState<Array<DisneyCharacter>>([]);
+  const [favCharacters, setfavCharacters] = useState<Array<DisneyCharacter>>(
+    []
+  );
+  const [totalNumPages, setTotalNumPages] = useState<number>(0);
+  const [isClicked, setIsClicked] = useState<boolean>(false);
 
   useEffect(() => {
-    const fetchDataHandler = async () => {
-      const response = await fetch("https://api.disneyapi.dev/characters");
+    const getCharactersHandler = async (pageNumber: number) => {
+      const response = await fetch(
+        `https://api.disneyapi.dev/characters?/page=${pageNumber}`
+      );
       const { data } = await response.json();
 
-      console.log(data);
+      setTotalNumPages(Math.ceil(data.length / 4));
 
-      const disneyData: Array<DisneyCharacter> = data.map(
-        (obj: DisneyCharacter) => {
-          return {
-            id: obj._id,
+      let disneyData: Array<DisneyCharacter> = [];
+
+      data.forEach((obj: DisneyCharacter, index: number) => {
+        if (index >= 4 * currentPage - 4 && index <= 4 * currentPage - 1) {
+          disneyData.push({
+            _id: obj._id,
             name: obj.name,
             imageUrl: obj.imageUrl,
-          };
+          });
         }
-      );
+      });
       setCharacters(disneyData);
     };
-    fetchDataHandler();
+    getCharactersHandler(currentPage);
   }, [currentPage]);
 
+  const updateHandler = (favChar: Array<DisneyCharacter>) => {
+    setfavCharacters([...favChar]);
+  };
+
+  const showFavCharacterHandler = () => {
+    setIsClicked(!isClicked);
+  };
+
   return (
-    <div className="page">
-      <Header currentPage={currentPage} />
-      <Navigation currentPage={currentPage} setCurrentPage={setCurrentPage} />
-      <CharacterContainer characters={characters} />
-    </div>
+    <FavCharacterContext.Provider
+      value={{ totalNumPages, favCharacters, isClicked }}
+    >
+      <div className="page">
+        <Header currentPage={currentPage} />
+        <Navigation
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+          showFavouriteCharacters={showFavCharacterHandler}
+        />
+        <CharacterContainer
+          characters={characters}
+          favCharacters={favCharacters}
+          updateFavourites={updateHandler}
+        />
+      </div>
+    </FavCharacterContext.Provider>
   );
 };
 

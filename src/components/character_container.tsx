@@ -1,46 +1,91 @@
-import React from 'react';
-import { DisneyCharacter } from '../disney_character';
-import Character from './character';
+/////////////////////////////////////////////////////////////////////////////////////////
 
-// for our props we can reuse the DisneyCharacter interface
-// - defining an anonymous type that just has one property - an array of DisneyCharacter
-const CharacterContainer : React.FC<{ characters: Array<DisneyCharacter>}> = ( { characters}) => {
+import React, { useContext } from "react";
+import { DisneyCharacter } from "../disney_character";
+import Character from "./character";
+import { FavCharacterContext } from "./favCharacterContext";
 
-	// this function separates our array of DisneyCharacters into rows and columns
-    const buildRows = () => {
-        
-		// we'll need arrays to store the rows and cols in, and they will be of type JSX.Element
-		let rows : Array<JSX.Element> = [], cols : Array<JSX.Element> = [];
-        
-		characters.forEach((character, index) => {
-            cols.push(<Character key={character._id} character={character} />);
-            if ((index + 1) % 5 === 0) {
-                rows.push(
-                    <div className="character-row" key={index}>
-                        {cols}
-                    </div>
-                )
-                cols = []
-            }
-        });
+/////////////////////////////////////////////////////////////////////////////////////////
 
-        // Final remaining columns
-        if (cols.length > 0) {
-            rows.push(
-                <div className="character-row" key={characters.length}>
-                    {cols}
-                </div>
-            )
-        }
+interface CharacterContainerProp {
+  characters: Array<DisneyCharacter>;
+  updateFavourites: (T: Array<DisneyCharacter>) => void;
+  favCharacters: Array<DisneyCharacter>;
+}
 
-        return rows;
+/////////////////////////////////////////////////////////////////////////////////////////
+
+const CharacterContainer: React.FC<CharacterContainerProp> = ({
+  characters,
+  updateFavourites,
+}) => {
+  const context = useContext(FavCharacterContext);
+  const { favCharacters, isClicked } = context;
+
+  const displayFavCharacters = () => {
+    return favCharacters.map((character, index) => {
+      return (
+        <article className="character-item" key={index + character.name}>
+          <h2>{character.name}</h2>
+
+          <img
+            className="character-item__img"
+            src={character.imageUrl}
+            alt={character.name}
+          />
+        </article>
+      );
+    });
+  };
+
+  const buildRows = () => {
+    let rows: Array<JSX.Element> = [],
+      cols: Array<JSX.Element> = [];
+
+    characters.forEach((character, index) => {
+      cols.push(
+        <Character
+          key={character._id}
+          character={character}
+          updateFavourites={updateFavourites}
+        />
+      );
+      if ((index + 1) % 5 === 0) {
+        rows.push(
+          <div className="character-row" key={index}>
+            {cols}
+          </div>
+        );
+        cols = [];
+      }
+    });
+
+    if (cols.length > 0) {
+      rows.push(
+        <div className="character-row" key={characters.length}>
+          {cols}
+        </div>
+      );
     }
 
-    return (
-        <div className="character-container">
-            {buildRows()}
+    return rows;
+  };
+
+  return (
+    <div className="character-container">
+      {isClicked ? (
+        <div className="character-row">
+          {favCharacters.length === 0 ? (
+            <div className="character-msg">"No Favourite characters yet !"</div>
+          ) : (
+            displayFavCharacters()
+          )}
         </div>
-    )
-}
+      ) : (
+        buildRows()
+      )}
+    </div>
+  );
+};
 
 export default CharacterContainer;
