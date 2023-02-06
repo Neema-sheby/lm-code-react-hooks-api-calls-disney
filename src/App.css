@@ -1,9 +1,13 @@
 @import url("https://fonts.googleapis.com/css2?family=Mouse+Memoirs&display=swap");
 
+body {
+  padding: 50px;
+  background-color: #bde0fe;
+}
+
 .page {
   margin: 0;
   font-family: "Mouse Memoirs";
-  background-color: #bde0fe;
 }
 
 .header__container {
@@ -11,6 +15,7 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  margin-bottom: 3rem;
 }
 
 .header__title {
@@ -46,13 +51,14 @@
 
 .character-container {
   max-width: 90%;
-  margin: 0 auto;
+  margin: 50px auto;
 }
 
 .character-row {
   display: flex;
   flex-flow: row wrap;
   text-align: center;
+  justify-content: center;
 }
 
 @media (max-width: 675px) {
@@ -68,14 +74,22 @@
 }
 
 .character-item {
-  flex: 1;
+  display: flex;
+
   border: 3px solid #666;
   border-radius: 5%;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   margin: 10px;
   height: 440px;
   background-color: #ffafcc;
+  padding: 2rem;
+}
+.character-msg {
+  width: 100%;
+  text-align: center;
+  font-size: 2em;
+  margin-top: 50px;
 }
 
 .character-item__img {
@@ -83,8 +97,30 @@
 }
 
 .character-item__actions {
+  border: none;
   font-size: 1.3em;
   padding: 10px;
   cursor: pointer;
   font-weight: lighter;
+  background-color: #bde0fe;
+  margin-bottom: 30px;
+  border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -o-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  box-shadow: 0 0 5px 2px rgba(0, 0, 0, 0.2);
+  transition: 0.3s all;
+  -webkit-transition: 0.3s all;
+  -moz-transition: 0.3s all;
+  -ms-transition: 0.3s all;
+  -o-transition: 0.3s all;
+}
+.character-item__actions:hover {
+  transform: scale(1.02);
+  -webkit-transform: scale(1.02);
+  -moz-transform: scale(1.02);
+  -ms-transform: scale(1.02);
+  -o-transform: scale(1.02);
 }
