@@ -19,27 +19,41 @@ const App: React.FC = () => {
   const [totalNumPages, setTotalNumPages] = useState<number>(0);
   const [isClicked, setIsClicked] = useState<boolean>(false);
 
+  const getErrorMessage = ({ message }: { message: string }) => {
+    console.error(message);
+  };
+
   useEffect(() => {
     const getCharactersHandler = async (pageNumber: number) => {
-      const response = await fetch(
-        `https://api.disneyapi.dev/characters?/page=${pageNumber}`
-      );
-      const { data } = await response.json();
+      try {
+        const response = await fetch(
+          `https://api.disneyapi.dev/characters?/page=${pageNumber}`
+        );
 
-      setTotalNumPages(Math.ceil(data.length / 4));
+        if (!response.ok)
+          throw new Error("Something went wrong with data fectching!");
 
-      let disneyData: Array<DisneyCharacter> = [];
+        const { data } = await response.json();
 
-      data.forEach((obj: DisneyCharacter, index: number) => {
-        if (index >= 4 * currentPage - 4 && index <= 4 * currentPage - 1) {
-          disneyData.push({
-            _id: obj._id,
-            name: obj.name,
-            imageUrl: obj.imageUrl,
-          });
-        }
-      });
-      setCharacters(disneyData);
+        setTotalNumPages(Math.ceil(data.length / 4));
+
+        let disneyData: Array<DisneyCharacter> = [];
+
+        data.forEach((obj: DisneyCharacter, index: number) => {
+          if (index >= 4 * currentPage - 4 && index <= 4 * currentPage - 1) {
+            disneyData.push({
+              _id: obj._id,
+              name: obj.name,
+              imageUrl: obj.imageUrl,
+            });
+          }
+        });
+        setCharacters(disneyData);
+      } catch (err: unknown) {
+        let message: string = "unknown error";
+        if (err instanceof Error) message = err.message;
+        getErrorMessage({ message });
+      }
     };
     getCharactersHandler(currentPage);
   }, [currentPage]);
