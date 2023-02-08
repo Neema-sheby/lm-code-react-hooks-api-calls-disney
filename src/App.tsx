@@ -27,28 +27,17 @@ const App: React.FC = () => {
     const getCharactersHandler = async (pageNumber: number) => {
       try {
         const response = await fetch(
-          `https://api.disneyapi.dev/characters?/page=${pageNumber}`
+          `https://api.disneyapi.dev/characters?page=${pageNumber}`
         );
 
         if (!response.ok)
           throw new Error("Something went wrong with data fectching!");
 
-        const { data } = await response.json();
+        const json = await response.json();
 
-        setTotalNumPages(Math.ceil(data.length / 4));
+        setTotalNumPages(json.totalPages);
 
-        let disneyData: Array<DisneyCharacter> = [];
-
-        data.forEach((obj: DisneyCharacter, index: number) => {
-          if (index >= 4 * currentPage - 4 && index <= 4 * currentPage - 1) {
-            disneyData.push({
-              _id: obj._id,
-              name: obj.name,
-              imageUrl: obj.imageUrl,
-            });
-          }
-        });
-        setCharacters(disneyData);
+        setCharacters(json.data);
       } catch (err: unknown) {
         let message: string = "unknown error";
         if (err instanceof Error) message = err.message;

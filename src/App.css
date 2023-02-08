@@ -74,16 +74,14 @@ body {
 }
 
 .character-item {
-  display: flex;
-
+  flex: 1;
   border: 3px solid #666;
   border-radius: 5%;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: space-between;
   margin: 10px;
   height: 440px;
   background-color: #ffafcc;
-  padding: 2rem;
 }
 .character-msg {
   width: 100%;
